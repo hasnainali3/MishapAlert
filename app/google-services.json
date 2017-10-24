@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "1047631163382",
+    "firebase_url": "https://mishap-alert.firebaseio.com",
+    "project_id": "mishap-alert",
+    "storage_bucket": "mishap-alert.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047631163382:android:97b4ae97659988a5",
+        "android_client_info": {
+          "package_name": "com.example.bilalkhawaja.mishapalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047631163382-ur6fb7np8tc925edr6p57a8127eot225.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bilalkhawaja.mishapalert",
+            "certificate_hash": "2231a03593e0a42761b19d86adb6e5433c2e83fd"
+          }
+        },
+        {
+          "client_id": "1047631163382-ok4t3fq198r49i56v14esbkvfl5rquhh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bilalkhawaja.mishapalert",
+            "certificate_hash": "9b7a70601273be15e0025b93ccb971db6871f8f7"
+          }
+        },
+        {
+          "client_id": "1047631163382-5t5ufg3us2bqm9kp691qj0r8ou0iv89f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0ItrTK47N53fT5EkWePmu2QahZ5KboCI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047631163382-5t5ufg3us2bqm9kp691qj0r8ou0iv89f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

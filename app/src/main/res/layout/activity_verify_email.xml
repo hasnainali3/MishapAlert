@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_verify_email"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/top_verifyemailbar"/>
+
+    <TextView
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="E-Mail"
+        android:gravity="center"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:id="@+id/verEmailTV"/>
+    <TextView
+        android:layout_marginTop="150dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:id="@+id/afterEmailTV"/>
+
+
+    <Button
+        android:layout_below="@+id/afterEmailTV"
+        android:layout_width="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:text="Set Profile"
+        android:id="@+id/gotoBTN"
+        android:background="@drawable/buttonshape"
+        android:textColor="@color/ButtonTextColor"
+        android:visibility="invisible"/>
+
+    <Button
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Send Verification E-Mail"
+        android:id="@+id/sendEmailBTN"
+        android:textColor="@color/ButtonTextColor"
+        android:background="@drawable/buttonshape"
+        android:layout_below="@+id/afterEmailTV"
+        android:layout_alignStart="@+id/gotoBTN" />
+    <Button
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Email has been Verified"
+        android:id="@+id/btnVerify"
+        android:textColor="@color/ButtonTextColor"
+        android:background="@drawable/buttonshape"
+        android:layout_below="@+id/afterEmailTV"
+        android:layout_alignStart="@+id/gotoBTN"
+        android:visibility="invisible"/>
+
+
+</RelativeLayout>

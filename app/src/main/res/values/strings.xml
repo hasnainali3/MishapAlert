@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Mishap Alert</string>
+    <string name="title_activity_nav_bar">NavBar</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="signed_success">signed in succesfully</string>
+    <string name="sign_credential_fail">failed to sign in with credential</string>
+
+
+    <array name="type">
+        <item name="1">t</item>
+        <item name="1"></item>
+        <item name="1"></item>
+        <item name="1"></item>
+    </array>
+    <string name="title_activity_maps2">Map</string>
+</resources>

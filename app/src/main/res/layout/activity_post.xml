@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white">
+<LinearLayout
+    android:id="@+id/activity_camera"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+
+   >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <include layout="@layout/top_cameratoolbar"/>
+    </RelativeLayout>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="500dp"
+    android:id="@+id/relLayout1"
+    android:layout_marginTop="10dp"
+    >
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/ivCameraImage"
+        android:visibility="invisible"
+        />
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/video"
+        android:visibility="invisible"/>
+     <ImageView
+         android:layout_width="80dp"
+         android:layout_height="80dp"
+         android:layout_centerVertical="true"
+         android:layout_centerHorizontal="true"
+         android:src="@drawable/ic_play"
+         android:id="@+id/IvPlay"
+         android:visibility="invisible"/>
+
+</RelativeLayout>
+    <RelativeLayout
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"></RelativeLayout>
+    <RelativeLayout
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/relLayout1"
+        >
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:text="Select incident/disaster type:"/>
+
+
+        <Spinner
+            android:layout_marginTop="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spType"
+            android:spinnerMode="dialog"></Spinner>
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout2"
+        android:layout_alignBottom="@+id/relLayout1"
+        android:layout_marginStart="10dp"
+        >
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/etDescription"
+            android:hint="Add description"
+            android:inputType="textCapSentences|textMultiLine"
+            android:selectAllOnFocus="true"
+            android:maxLength="2000"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout3"
+        android:layout_alignBottom="@+id/relLayout2"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Severity"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout4"
+        android:layout_alignBottom="@+id/relLayout3"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioSeverity">
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="High"
+                android:textSize="15sp"
+                android:id="@+id/rbHigh" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Medium"
+                android:textSize="15sp"
+                android:id="@+id/rbMedium"/>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Low"
+                android:textSize="15sp"
+                android:id="@+id/rbLow"/>
+
+            </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/metadata"
+            android:visibility="invisible"/>
+
+    </RelativeLayout>
+</LinearLayout>
+
+</ScrollView>
+

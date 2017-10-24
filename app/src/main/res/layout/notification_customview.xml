@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/circleImageView" />
+
+    <TextView
+        android:text="Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/circleImageView"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:id="@+id/tvTitle" />
+
+    <TextView
+        android:text="Description "
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvDescription"
+        android:maxLines="1"
+        android:layout_below="@+id/tvTitle"
+        android:layout_alignStart="@+id/tvTitle" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDescription"
+        android:layout_alignStart="@+id/tvTitle"
+        android:text="Bomb Blast"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/type"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/circleImageView"
+        android:layout_toEndOf="@+id/tvDescription"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="6dp"
+        android:id="@+id/tvPostid"
+        android:visibility="invisible"
+       />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvPostid"
+        android:layout_toEndOf="@+id/tvPostid"
+        android:layout_marginStart="31dp"
+        android:id="@+id/tvUserid"
+        android:visibility="invisible"/>
+
+
+</RelativeLayout>
