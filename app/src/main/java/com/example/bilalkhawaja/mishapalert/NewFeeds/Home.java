@@ -111,6 +111,8 @@ public class Home extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, String> map = dataSnapshot.getValue(Map.class);
                 increment = Integer.parseInt(String.valueOf(map.get("increment")));
+
+                //getting city of the current user
                 currentuser_city = map.get("city");
 
                     databaseReference_Searchcity.child(currentuser_city).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
