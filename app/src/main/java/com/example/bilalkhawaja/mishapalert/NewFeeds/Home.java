@@ -6,42 +6,39 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.provider.*;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import com.example.bilalkhawaja.mishapalert.*;
 import com.example.bilalkhawaja.mishapalert.GPS.GPSTracker;
 import com.example.bilalkhawaja.mishapalert.GPS.Myservice;
 import com.example.bilalkhawaja.mishapalert.Notification.Notification_View;
 import com.example.bilalkhawaja.mishapalert.Posts.Post;
 import com.example.bilalkhawaja.mishapalert.Profiles.CustomAdapter;
 import com.example.bilalkhawaja.mishapalert.Profiles.DataModel;
+import com.example.bilalkhawaja.mishapalert.R;
+import com.example.bilalkhawaja.mishapalert.Registration.User;
 import com.example.bilalkhawaja.mishapalert.Searchs.Search;
 import com.example.bilalkhawaja.mishapalert.Utilities.BottomNavigationViewHelper;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Home extends AppCompatActivity {
@@ -53,7 +50,7 @@ public class Home extends AppCompatActivity {
     ArrayList names, profileimage;
     ListView listView;
     CustomAdapter adapter;
-    String name, profileImage,currentuser_city;
+    String name, profileImage, currentuser_city;
     int following = 0, increment_following = 0, increment;
 
     private static final int MY_CAMERA_REQUEST_CODE = 100;
@@ -104,110 +101,131 @@ public class Home extends AppCompatActivity {
         databaseReference_Searchcity = FirebaseDatabase.getInstance().getReference();
         firebaseRef = new Firebase("https://mishap-alert.firebaseio.com/Users/" + userID);
 
-
-        //for retrieving current user details i.e name and profile image uri.
-        firebaseRef.addValueEventListener(new ValueEventListener() {
+        //this is current user will all post notification everything and this is method for calling it once only
+        FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, String> map = dataSnapshot.getValue(Map.class);
-                increment = Integer.parseInt(String.valueOf(map.get("increment")));
+            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
 
-                //getting city of the current user
-                currentuser_city = map.get("city");
-
-                    databaseReference_Searchcity.child(currentuser_city).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-                        @Override
-                        public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-                            for(final com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
-                            {
-
-
-                                databaseReference.child(data.getKey()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-
-                                        name = dataSnapshot.child("name").getValue(String.class);
-                                        profileImage = dataSnapshot.child("uri").getValue(String.class);
-                                        following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
-
-                                        /*Map<Object, String> map = new HashMap<Object, String>();
-                                        map.put("" , String.valueOf(dataSnapshot.child("posts").getValue()));*/
-
-                                        Log.d("TAG1", String.valueOf(dataSnapshot.child("posts").child("posturi").getValue()));
-
-//                                        names.add(dataSnapshot.child("name").getValue(String.class));
-//                                        profileimage.add(dataSnapshot.child("uri").getValue(String.class));
-                                        databaseReference.child(data.getKey()).child("posts").addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-
-
-                                                for(com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
-                                                {
-
-                                                    String description = data.child("description").getValue(String.class);
-                                                    String dateTime = data.child("dateTime").getValue(String.class);
-                                                    String posturi = data.child("posturi").getValue(String.class);
-                                                    String severity = data.child("severity").getValue(String.class);
-                                                    String lat = data.child("lat").getValue(String.class);
-                                                    String lon = data.child("lon").getValue(String.class);
-                                                    String metadata = data.child("metadata").getValue(String.class);
-
-                                                    /*Log.d("TAG1", data.getKey().toString() );
-                                                    Log.d("TAG Name", String.valueOf(names.get(0)));*/
-
-
-                                                        DataModel dataModel = new DataModel(userID,  name, dateTime, description,  profileImage, posturi, lon, lat, severity, data.getKey().toString(), metadata);
-                                                        list.add(dataModel);
-
-
-
-
-                                                }
-
-                                                Collections.reverse(list);
-                                                adapter = new CustomAdapter(Home.this, list);
-                                                listView.setAdapter(adapter);
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-
-
-
-
-
+                User user = dataSnapshot.getValue(User.class);
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+
+        //this is method to find all the post from peshawar
+        final ArrayList<User> userinacity = new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("city").equalTo("peshawar").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    User user = dataSnapshot1.getValue(User.class);
+                    userinacity.add(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //for retrieving current user details i.e name and profile image uri.
+//        firebaseRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Map<String, String> map = dataSnapshot.getValue(Map.class);
+//                increment = Integer.parseInt(String.valueOf(map.get("increment")));
+//
+//                //getting city of the current user
+//                currentuser_city = map.get("city");
+//
+//                databaseReference_Searchcity.child(currentuser_city).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//                        for (final com.google.firebase.database.DataSnapshot data : dataSnapshot.getChildren()) {
+//
+//
+//                            databaseReference.child(data.getKey()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//
+//                                    name = dataSnapshot.child("name").getValue(String.class);
+//                                    profileImage = dataSnapshot.child("uri").getValue(String.class);
+//                                    following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
+//
+//                                        /*Map<Object, String> map = new HashMap<Object, String>();
+//                                        map.put("" , String.valueOf(dataSnapshot.child("posts").getValue()));*/
+//
+//                                    Log.d("TAG1", String.valueOf(dataSnapshot.child("posts").child("posturi").getValue()));
+//
+////                                        names.add(dataSnapshot.child("name").getValue(String.class));
+////                                        profileimage.add(dataSnapshot.child("uri").getValue(String.class));
+//                                    databaseReference.child(data.getKey()).child("posts").addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//
+//                                            for (com.google.firebase.database.DataSnapshot data : dataSnapshot.getChildren()) {
+//
+//                                                String description = data.child("description").getValue(String.class);
+//                                                String dateTime = data.child("dateTime").getValue(String.class);
+//                                                String posturi = data.child("posturi").getValue(String.class);
+//                                                String severity = data.child("severity").getValue(String.class);
+//                                                String lat = data.child("lat").getValue(String.class);
+//                                                String lon = data.child("lon").getValue(String.class);
+//                                                String metadata = data.child("metadata").getValue(String.class);
+//
+//                                                    /*Log.d("TAG1", data.getKey().toString() );
+//                                                    Log.d("TAG Name", String.valueOf(names.get(0)));*/
+//
+//
+//                                                DataModel dataModel = new DataModel(userID, name, dateTime, description, profileImage, posturi, lon, lat, severity, data.getKey().toString(), metadata);
+//                                                list.add(dataModel);
+//
+//
+//                                            }
+//
+//                                            Collections.reverse(list);
+//                                            adapter = new CustomAdapter(Home.this, list);
+//                                            listView.setAdapter(adapter);
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
 
 
         //check if following exists and reteriving their data
@@ -232,13 +250,11 @@ public class Home extends AppCompatActivity {
                                 picture = dataSnapshot.child("uri").getValue(String.class);
                                 increment_following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
 
-                               // Toast.makeText(Home.this,  "inc: "+ increment_following, Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(Home.this,  "inc: "+ increment_following, Toast.LENGTH_SHORT).show();
                                 databaseref_otheruser_post = databaseReference.child(id).child("posts");
-                                if(increment_following == 0)
-                                {
+                                if (increment_following == 0) {
                                     //do nothing
-                                }
-                                else {
+                                } else {
                                     databaseref_otheruser_post.limitToLast(increment_following).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                                         @Override
                                         public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
@@ -254,7 +270,7 @@ public class Home extends AppCompatActivity {
                                                 String lon = ds.child("lon").getValue(String.class);
                                                 String metadata = ds.child("metadata").getValue(String.class);
 
-                                                DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity,ds.getKey().toString(),metadata);
+                                                DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity, ds.getKey().toString(), metadata);
                                                 list.add(dataModel1);
                                             }
                                             Collections.reverse(list);
@@ -276,8 +292,6 @@ public class Home extends AppCompatActivity {
 
                             }
                         });
-
-
 
 
                     }
@@ -309,7 +323,7 @@ public class Home extends AppCompatActivity {
 
         //Loading Post
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,15);
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
         startActivityForResult(intent, REQUEST_VIDE0);
     }
@@ -332,7 +346,6 @@ public class Home extends AppCompatActivity {
             finish();
         }
         if (requestCode == REQUEST_VIDE0 && resultCode == RESULT_OK) {
-
 
 
             String videoUri = data.getDataString();
@@ -377,7 +390,7 @@ public class Home extends AppCompatActivity {
                         builder.setPositiveButton("Picture", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                if(Build.VERSION.SDK_INT >= 23) {
+                                if (Build.VERSION.SDK_INT >= 23) {
                                     if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                                         cameraIntent();
                                     } else {
@@ -400,7 +413,7 @@ public class Home extends AppCompatActivity {
                         builder.setNeutralButton("Back", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent1 = new Intent(getBaseContext(),Home.class);
+                                Intent intent1 = new Intent(getBaseContext(), Home.class);
                                 startActivity(intent1);
                             }
                         });

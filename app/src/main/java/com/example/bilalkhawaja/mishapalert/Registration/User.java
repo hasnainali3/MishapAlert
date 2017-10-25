@@ -1,54 +1,131 @@
 package com.example.bilalkhawaja.mishapalert.Registration;
 
-import android.net.Uri;
+import com.example.bilalkhawaja.mishapalert.NotificationModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Bilal Khawaja on 4/22/2017.
  */
 public class User {
 
-String id , name , username , email, city;
+    private String FCM_TOKEN;
+    private HashMap<String, String> Following;
+    private ArrayList<NotificationModel> Notification;
+    private String Password;
+    private String city;
+    private String email;
+    private String latitude;
+    private String longitude;
+    private String name;
+    private ArrayList<PostModel> post;
+    private String radius;
+    private String uri;
+    private String username;
 
-    public User(){}
 
-    public User(String id , String name , String email , String username, String city){
-        this.id = id ;
-        this.name = name;
-        this.email = email;
-        this.username = username;
-        this.city = city;
-
+    public User() {
     }
 
-    public String getName() {
-        return name;
+
+    public String getFCM_TOKEN() {
+        return FCM_TOKEN;
+    }
+
+    public HashMap<String, String> getFollowing() {
+        return Following;
+    }
+
+    public void setFollowing(HashMap<String, String> following) {
+        Following = following;
+    }
+
+    public ArrayList<NotificationModel> getNotification() {
+        return Notification;
+    }
+
+    public void setNotification(ArrayList<NotificationModel> notification) {
+        Notification = notification;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getId() {
-        return id;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ArrayList<PostModel> getPost() {
+        return post;
+    }
+
+    public void setPost(ArrayList<PostModel> post) {
+        this.post = post;
+    }
+
+    public String getRadius() {
+        return radius;
+    }
+
+    public void setRadius(String radius) {
+        this.radius = radius;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public String getCity() {return city;}
-
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setCity(String city) {this.city = city; }
 }
