@@ -1,7 +1,6 @@
-package com.example.bilalkhawaja.mishapalert.Profiles;
+package com.example.bilalkhawaja.mishapalert.NewFeeds;
 
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -22,7 +21,10 @@ import android.widget.VideoView;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.bilalkhawaja.mishapalert.Followers.OtherUser;
 import com.example.bilalkhawaja.mishapalert.MapActivity.MapsActivity2;
+import com.example.bilalkhawaja.mishapalert.Profiles.DataModel;
+import com.example.bilalkhawaja.mishapalert.Profiles.Profile;
 import com.example.bilalkhawaja.mishapalert.R;
+import com.example.bilalkhawaja.mishapalert.Registration.PostModel;
 import com.example.bilalkhawaja.mishapalert.Registration.User;
 import com.example.bilalkhawaja.mishapalert.Utilities.imagezoom;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,15 +34,14 @@ import com.stfalcon.frescoimageviewer.ImageViewer;
 
 import java.util.ArrayList;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 /**
- * Created by Bilal Khawaja on 22/06/2017.
+ * Created by Hasnain Ali on 10/30/2017.
  */
 
-public class CustomAdapter extends ArrayAdapter {
+public class CustomAdapter_Home extends ArrayAdapter {
+
     Context context;
-    ArrayList<DataModel> list;
+    ArrayList<PostModel> list;
     ArrayList<String> images ;
     FirebaseUser user;
     ImagePopup imagePopup;
@@ -51,7 +52,7 @@ public class CustomAdapter extends ArrayAdapter {
     Uri imageuri = null;
     WindowManager.LayoutParams lp;
     ImageViewer imageViewer;
-    public CustomAdapter(Context context, ArrayList<DataModel> list) {
+    public CustomAdapter_Home(Context context, ArrayList<PostModel> list) {
         super(context, R.layout.customlayout, list);
         this.context = context;
         this.list = list;
@@ -112,13 +113,14 @@ public class CustomAdapter extends ArrayAdapter {
 
 
 
-        final DataModel data = list.get(position);
+        final PostModel data = list.get(position);
 
-       // Picasso.with(getContext()).load(data.getProfileImage()).fit().centerCrop().into(profilepicture);
-        profilepicture.setImageURI(data.getProfileImage());
+        // Picasso.with(getContext()).load(data.getProfileImage()).fit().centerCrop().into(profilepicture);
+        description.setText(data.getDescription());
+      /*  profilepicture.setImageURI(data.getProfileImage());
         username.setText(data.getName());
         date.setText(data.getTime());
-        description.setText(data.getDescription());
+
         severity.setText(data.getSeverity());
         lat.setText(data.getLat());
         lon.setText(data.getLon());
@@ -139,7 +141,7 @@ public class CustomAdapter extends ArrayAdapter {
 
             postpicture.setVisibility(View.VISIBLE);
             play.setVisibility(View.INVISIBLE);
-          // Picasso.with(getContext()).load(data.getPostImage()).fit().centerCrop().into(postpicture);
+            // Picasso.with(getContext()).load(data.getPostImage()).fit().centerCrop().into(postpicture);
             postpicture.setImageURI(Uri.parse(data.getPostImage()));
 
             video.getHolder();
@@ -155,13 +157,13 @@ public class CustomAdapter extends ArrayAdapter {
 
         //Toast.makeText(context, images.size()+"", Toast.LENGTH_SHORT).show();
 
-      /*  imageViewer = new ImageViewer.Builder<>(context,images)
-                            .setStartPosition(1).show();*/
+      *//*  imageViewer = new ImageViewer.Builder<>(context,images)
+                            .setStartPosition(1).show();*//*
 
-       /* new ImageViewer.Builder(context, images)
+       *//* new ImageViewer.Builder(context, images)
                 .setStartPosition(0)
                 .show();
-*/
+*//*
 
 
         //Full screen video options
@@ -283,7 +285,7 @@ public class CustomAdapter extends ArrayAdapter {
             }
         });
 
-        
+
         postpicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -294,7 +296,7 @@ public class CustomAdapter extends ArrayAdapter {
 
             }
         });
-
+*/
 
 
 

@@ -307,7 +307,7 @@ public class Search extends AppCompatActivity {
                                     Log.d("onDataChange1: ", dataSnapshot.child("name").getValue(String.class));
                                     names = dataSnapshot.child("name").getValue(String.class);
                                     profileImage = dataSnapshot.child("uri").getValue(String.class);
-                                    following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
+//                                    following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
 
 
                                     databaseReference.child(data.getKey()+"/posts").addValueEventListener(new com.google.firebase.database.ValueEventListener() {
