@@ -10,8 +10,10 @@ import java.util.HashMap;
  */
 public class User {
 
+    private String key;
     private String FCM_TOKEN;
     private HashMap<String, String> Following;
+    private HashMap<String, String> Follower;
     private ArrayList<NotificationModel> Notification;
     private String Password;
     private String city;
@@ -19,7 +21,7 @@ public class User {
     private String latitude;
     private String longitude;
     private String name;
-    private ArrayList<PostModel> post;
+    private ArrayList<PostModel> posts;
     private String radius;
     private String uri;
     private String username;
@@ -28,6 +30,13 @@ public class User {
     public User() {
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getFCM_TOKEN() {
         return FCM_TOKEN;
@@ -43,6 +52,14 @@ public class User {
 
     public ArrayList<NotificationModel> getNotification() {
         return Notification;
+    }
+
+    public HashMap<String, String> getFollower() {
+        return Follower;
+    }
+
+    public void setFollower(HashMap<String, String> follower) {
+        Follower = follower;
     }
 
     public void setNotification(ArrayList<NotificationModel> notification) {
@@ -97,12 +114,12 @@ public class User {
         this.name = name;
     }
 
-    public ArrayList<PostModel> getPost() {
-        return post;
+    public ArrayList<PostModel> getPosts() {
+        return posts;
     }
 
-    public void setPost(ArrayList<PostModel> post) {
-        this.post = post;
+    public void setPosts(ArrayList<PostModel> posts) {
+        this.posts = posts;
     }
 
     public String getRadius() {

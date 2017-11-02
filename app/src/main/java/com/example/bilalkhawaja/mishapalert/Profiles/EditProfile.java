@@ -238,6 +238,7 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         progressDialog.setMessage("Uploading Image...");
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);

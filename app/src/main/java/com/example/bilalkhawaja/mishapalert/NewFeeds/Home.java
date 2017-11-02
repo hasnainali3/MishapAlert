@@ -12,9 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.bilalkhawaja.mishapalert.GPS.GPSTracker;
 import com.example.bilalkhawaja.mishapalert.GPS.Myservice;
@@ -24,6 +26,7 @@ import com.example.bilalkhawaja.mishapalert.Profiles.CustomAdapter;
 import com.example.bilalkhawaja.mishapalert.Profiles.DataModel;
 import com.example.bilalkhawaja.mishapalert.R;
 import com.example.bilalkhawaja.mishapalert.Registration.User;
+import com.example.bilalkhawaja.mishapalert.Registration.PostModel;
 import com.example.bilalkhawaja.mishapalert.Searchs.Search;
 import com.example.bilalkhawaja.mishapalert.Utilities.BottomNavigationViewHelper;
 import com.firebase.client.Firebase;
@@ -35,7 +38,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ public class Home extends AppCompatActivity {
     ArrayList names, profileimage;
     ListView listView;
     CustomAdapter adapter;
+    ArrayList<PostModel> postModel;
     String name, profileImage, currentuser_city;
     int following = 0, increment_following = 0, increment;
 
@@ -69,6 +72,8 @@ public class Home extends AppCompatActivity {
         gps = new GPSTracker(Home.this);
         lat = gps.getLatitude();
         lon = gps.getLongitude();
+
+        postModel = new ArrayList<>();
 
         names = new ArrayList();
         profileimage = new ArrayList();
@@ -106,6 +111,8 @@ public class Home extends AppCompatActivity {
             @Override
             public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
 
+
+
                 User user = dataSnapshot.getValue(User.class);
             }
 
@@ -121,9 +128,24 @@ public class Home extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
                     User user = dataSnapshot1.getValue(User.class);
                     userinacity.add(user);
+                    
+                   // Log.d("PostModel", user.getPosts().get(0).getDescription());
                 }
+
+
+              /*  for(int i = 0 ; i <userinacity.size(); i++)
+                {
+
+                     postModel.add(userinacity.get(i).getPosts());
+                    Toast.makeText(Home.this, i + "", Toast.LENGTH_SHORT).show();
+                    Log.d("DATASNAPSHOT: ", String.valueOf(postModel.get(i).getDescription()));
+                }*/
+               /* CustomAdapter_Home customAdapter_home = new CustomAdapter_Home(Home.this, postModel);
+                listView.setAdapter(customAdapter_home);*/
+
             }
 
             @Override
@@ -131,6 +153,8 @@ public class Home extends AppCompatActivity {
 
             }
         });
+
+
 
         //for retrieving current user details i.e name and profile image uri.
 //        firebaseRef.addValueEventListener(new ValueEventListener() {
@@ -274,7 +298,7 @@ public class Home extends AppCompatActivity {
                                                 list.add(dataModel1);
                                             }
                                             Collections.reverse(list);
-                                            adapter = new CustomAdapter(Home.this, list);
+                                           // adapter = new CustomAdapter(Home.this, list);
                                             listView.setAdapter(adapter);
 
                                         }

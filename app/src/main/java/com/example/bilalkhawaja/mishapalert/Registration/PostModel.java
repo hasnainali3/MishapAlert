@@ -4,12 +4,12 @@ package com.example.bilalkhawaja.mishapalert.Registration;
  * Created by Zahid on 10/26/17.
  */
 
-class PostModel {
+public class PostModel {
 
     private String dateTime;
     private String description;
-    private double lat;
-    private double lon;
+    private String lat;
+    private String lon;
     private String metadata;
     private String posturi;
     private String severity;
@@ -35,19 +35,19 @@ class PostModel {
         this.description = description;
     }
 
-    public double getLat() {
+    public String getLat() {
         return lat;
     }
 
-    public void setLat(double lat) {
+    public void setLat(String lat) {
         this.lat = lat;
     }
 
-    public double getLon() {
+    public String getLon() {
         return lon;
     }
 
-    public void setLon(double lon) {
+    public void setLon(String lon) {
         this.lon = lon;
     }
 
