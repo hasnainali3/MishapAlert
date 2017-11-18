@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:text="Send Verification E-Mail"
         android:id="@+id/sendEmailBTN"
+        android:visibility="invisible"
         android:textColor="@color/ButtonTextColor"
         android:background="@drawable/buttonshape"
         android:layout_below="@+id/afterEmailTV"

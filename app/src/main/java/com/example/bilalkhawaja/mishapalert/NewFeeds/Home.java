@@ -12,9 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.bilalkhawaja.mishapalert.GPS.GPSTracker;
 import com.example.bilalkhawaja.mishapalert.GPS.Myservice;
@@ -51,6 +53,7 @@ public class Home extends AppCompatActivity {
     ArrayList names, profileimage;
     ListView listView;
     CustomAdapter adapter;
+    CustomAdapter_Home customAdapter_home;
     ArrayList<PostModel> postModel;
     String name, profileImage, currentuser_city;
     int following = 0, increment_following = 0, increment;
@@ -112,30 +115,46 @@ public class Home extends AppCompatActivity {
 
 
                 User user = dataSnapshot.getValue(User.class);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                //this is method to find all the post from peshawar
+                final ArrayList<User> userinacity = new ArrayList<>();
+                final ArrayList<PostModel> postModels = new ArrayList<>();
+                FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("city").equalTo(user.getCity()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-            }
-        });
+                            User user = dataSnapshot1.getValue(User.class);
+                            userinacity.add(user);
+                        }
+                        for (User user : userinacity) {
+                            if (user.getPosts() != null)
+                                for (PostModel postModel : user.getPosts()) {
+                                    if (postModel != null) {
+                                       // Log.d("Postmodel", postModel.toString());
+                                        postModel.setName(user.getName());
+                                        postModel.setId(user.getId());
+                                        postModel.setUri(user.getUri());
+                                        postModel.setRadius(user.getRadius());
+                                        postModel.setEmail(user.getEmail());
+                                        postModels.add(postModel);
 
-        //this is method to find all the post from peshawar
-        final ArrayList<User> userinacity = new ArrayList<>();
-        final ArrayList<PostModel> postModels = new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("city").equalTo("peshawar").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                    }
 
-                    User user = dataSnapshot1.getValue(User.class);
-                    userinacity.add(user);
-                }
-                for (User user : userinacity) {
-                    for (PostModel postModel : user.getPosts()) {
-                        postModels.add(postModel);
+                                }
+                        }
+                        Collections.reverse(postModels);
+                        customAdapter_home = new CustomAdapter_Home(Home.this, postModels);
+                        listView.setAdapter(customAdapter_home);
+
+
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
             }
 
@@ -263,8 +282,9 @@ public class Home extends AppCompatActivity {
                                 othername = dataSnapshot.child("username").getValue(String.class);
                                 picture = dataSnapshot.child("uri").getValue(String.class);
                                 increment_following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
-
-                                // Toast.makeText(Home.this,  "inc: "+ increment_following, Toast.LENGTH_SHORT).show();
+                                final double radius = dataSnapshot.child("radius").getValue(Double.class);
+                                final String radiuss = dataSnapshot.child("radius").getValue(String.class);
+                                 Toast.makeText(Home.this,  "inc: "+ radius, Toast.LENGTH_SHORT).show();
                                 databaseref_otheruser_post = databaseReference.child(id).child("posts");
                                 if (increment_following == 0) {
                                     //do nothing
@@ -284,7 +304,7 @@ public class Home extends AppCompatActivity {
                                                 String lon = ds.child("lon").getValue(String.class);
                                                 String metadata = ds.child("metadata").getValue(String.class);
 
-                                                DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity, ds.getKey().toString(), metadata);
+                                                DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity, ds.getKey().toString(), metadata, radius);
                                                 list.add(dataModel1);
                                             }
                                             Collections.reverse(list);

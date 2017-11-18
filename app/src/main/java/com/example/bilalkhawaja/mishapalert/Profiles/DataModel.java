@@ -7,12 +7,13 @@ package com.example.bilalkhawaja.mishapalert.Profiles;
 public class DataModel {
 
     String id, name, time, description, profileImage, postImage, lat, lon, severity, postid, metadata;
+    Double radius;
 
     public DataModel() {
 
     }
 
-    public DataModel(String id, String name, String time, String description, String profileImage, String postImage, String lon, String lat, String severity, String postid, String metadata) {
+    public DataModel(String id, String name, String time, String description, String profileImage, String postImage, String lon, String lat, String severity, String postid, String metadata, Double radius) {
         this.id = id;
         this.name = name;
         this.time = time;
@@ -24,7 +25,9 @@ public class DataModel {
         this.severity = severity;
         this.postid = postid;
         this.metadata = metadata;
+        this.radius = radius;
     }
+
 
     public String getMetadata() {
         return metadata;
@@ -32,6 +35,14 @@ public class DataModel {
 
     public String getId() {
         return id;
+    }
+
+    public Double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(Double radius) {
+        this.radius = radius;
     }
 
     public void setId(String id) {

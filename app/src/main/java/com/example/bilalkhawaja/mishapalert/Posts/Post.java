@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -45,6 +46,7 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.fitness.data.Goal;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -82,6 +84,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static android.R.attr.data;
 import static android.R.attr.handle;
@@ -121,8 +125,9 @@ public class Post extends AppCompatActivity implements AsyncResponse {
     com.google.firebase.database.DataSnapshot data1;
     VideoView video;
     String videouri, filePath;
-
-
+    protected LocationManager locationManager;
+    boolean isGPSEnabled = false;
+    PhotoViewAttacher photoViewAttacher ;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,21 +136,26 @@ public class Post extends AppCompatActivity implements AsyncResponse {
         ab = new StringBuilder();
 
         media = new MediaController(this);
-        url = "http://192.168.137.1/projectapi/index.php?";
+        url = "http://192.168.8.139/projectapi/index.php?";
 
-       // url = "http://mihsapalert.000webhostapp.com/index.php?";
+        // url = "http://mihsapalert.000webhostapp.com/index.php?";
 
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+        
 
         //getting time and date
         currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
-        String[] types = {"Bombblast", "Earthquack", "Building collaps", "Road problem"};
+        String[] types = {"Select","Bombblast", "Earthquack", "Building collaps", "Road problem"};
         ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, types);
+        
 
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED & checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lat = gps.getLatitude();
             lon = gps.getLongitude();
-            Toast.makeText(Post.this, lat + "....\n" + lon, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(Post.this, lat + "....\n" + lon, Toast.LENGTH_SHORT).show();
         } else {
             String[] Permissionrequet = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             requestPermissions(Permissionrequet, MY_LOCATION_REQUEST_CODE);
@@ -187,6 +197,14 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                 return false;
             }
         });
+
+        IvPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IvPlay.setVisibility(View.INVISIBLE);
+                video.start();
+            }
+        });
         //String userID = user.getUid();
 
         //Firebase
@@ -201,6 +219,9 @@ public class Post extends AppCompatActivity implements AsyncResponse {
         ref = new Firebase("https://mishap-alert.firebaseio.com/Users/" + userID); //To avoid duplication in database we have used "UserID" in the link
         firebaseref = new Firebase("https://mishap-alert.firebaseio.com/Users");
 
+
+
+
         //video compression
         if (getIntent().getParcelableExtra("imageUri") != null) {
             //Loading image in image view from home activity
@@ -208,6 +229,8 @@ public class Post extends AppCompatActivity implements AsyncResponse {
             Intent intent = getIntent();
             bitmap = (Bitmap) intent.getParcelableExtra("imageUri");
             cameraImage.setImageBitmap(bitmap);
+            photoViewAttacher = new PhotoViewAttacher(cameraImage);
+            photoViewAttacher.update();
 
         } else {
             Toast.makeText(this, "Getting your Video ready for upload", Toast.LENGTH_SHORT).show();
@@ -243,10 +266,10 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                 Map<String, Integer> map = dataSnapshot.getValue(Map.class);
                 increment = map.get("increment");
 
-               // Toast.makeText(Post.this, "increment: " + increment, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Post.this, "increment: " + increment, Toast.LENGTH_SHORT).show();
                 Map<String, String> map1 = dataSnapshot.getValue(Map.class);
                 radius = Double.valueOf(map1.get("radius"));
-               // Toast.makeText(Post.this, "Radius" + radius, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Post.this, "Radius" + radius, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -266,14 +289,15 @@ public class Post extends AppCompatActivity implements AsyncResponse {
 
                     Log.d("TAG FOR GEOFIRE", "Key Entered: " + key + "\n At Locaton" + location.latitude + "" + location.longitude);
                     //Toast.makeText(Post.this, "Key Entered: " + key + "\n At Locaton" + location.latitude + "" + location.longitude, Toast.LENGTH_SHORT).show();
-                    if(!key.equals(userID))
-                    {userids.add(key);}
+                    if (!key.equals(userID)) {
+                        userids.add(key);
+                    }
                     dataref_notification.child("Users").orderByChild("id").equalTo(key).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot data : dataSnapshot.getChildren()) {
                                 Log.d("TAG", data.toString());
-                               // Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
                                 users.add(data.child("FCM_TOKEN").getValue(String.class));
                             }
                         }
@@ -291,20 +315,20 @@ public class Post extends AppCompatActivity implements AsyncResponse {
 
             @Override
             public void onKeyExited(String key) {
-               // Toast.makeText(Post.this, "Key Entered: " + key, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Post.this, "Key Entered: " + key, Toast.LENGTH_SHORT).show();
 
 
             }
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-               // Toast.makeText(Post.this, "Key Entered: " + key + "\n At Locaton" + location.latitude + "" + location.longitude, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Post.this, "Key Entered: " + key + "\n At Locaton" + location.latitude + "" + location.longitude, Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onGeoQueryReady() {
-               // Toast.makeText(Post.this, "All initial data has been loaded and events have been fired!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Post.this, "All initial data has been loaded and events have been fired!", Toast.LENGTH_SHORT).show();
 
 
             }
@@ -333,9 +357,7 @@ public class Post extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onClick(View view) {
 
-
-
-
+/*
                 try {
                     title = URLEncoder.encode(spinner.getSelectedItem().toString(), "UTF-8");
                     description = URLEncoder.encode(etDescription.getText().toString(), "UTF-8");
@@ -348,11 +370,11 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             Log.d("TAG", data.toString());
-                          Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
                             users.add(data.child("FCM_TOKEN").getValue(String.class));
                             userids.add(data.getKey());
-                            Toast.makeText(Post.this, "users "+users.size(), Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Post.this, "ids " + userids.size() + "\n"+data.getKey(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(Post.this, "users "+users.size(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(Post.this, "ids " + userids.size() + "\n"+data.getKey(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -360,10 +382,10 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                });*/
 
 
-               /* AlertDialog.Builder builder = new AlertDialog.Builder(Post.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Post.this);
                 builder.setCancelable(false);
                 builder.setTitle("Cancel Post");
                 builder.setMessage("Are you sure?");
@@ -386,7 +408,7 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                 });
 
                 builder.create();
-                builder.show();*/
+                builder.show();
             }
         });
 
@@ -395,259 +417,279 @@ public class Post extends AppCompatActivity implements AsyncResponse {
 
 
     private void saveUserPost() {
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if(isGPSEnabled)
+        {
+            if(spinner.getSelectedItem().equals("Select"))
+            {
+                Toast.makeText(this, "Select disaster/incident type", Toast.LENGTH_SHORT).show();
+            }
+            else if(!rbhigh.isChecked() && !rblow.isChecked() && !rbmedium.isChecked()) {
 
-        try {
-            title = URLEncoder.encode(spinner.getSelectedItem().toString(), "UTF-8");
-            description = URLEncoder.encode(etDescription.getText().toString(), "UTF-8");
+                Toast.makeText(this, "Select severity of the disaster/incident", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                try {
+                    title = URLEncoder.encode(spinner.getSelectedItem().toString(), "UTF-8");
+                    description = URLEncoder.encode(etDescription.getText().toString(), "UTF-8");
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        dataref_notification.child("Users").orderByChild("email").equalTo(dep(title)).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Log.d("TAG", data.toString());
-                    //Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
-                    users.add(data.child("FCM_TOKEN").getValue(String.class));
-                    userids.add(data.getKey());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        increment = increment + 1;
-        mProgress.setMessage("Uploading ");
-        mProgress.setCancelable(false);
-        mProgress.create();
-        mProgress.show();
-
-        String profilePicUrl ;
-        byte[] data ;
-        StorageReference mChildStorage ;
-
-        if (getIntent().getParcelableExtra("imageUri") != null) {
-            profilePicUrl = bitmap.toString();
-            cameraImage.setDrawingCacheEnabled(true);
-            cameraImage.buildDrawingCache();
-            Bitmap bitmap = cameraImage.getDrawingCache();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            data = baos.toByteArray();
-            mChildStorage = storageReference.child("Posts").child(profilePicUrl);
-            //final StorageReference finalMChildStorage = mChildStorage;
-            mChildStorage.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                    ab.append("image");
-                    downloaduri = taskSnapshot.getDownloadUrl();
-
-                    Map<String, Object> imageInfo = new HashMap<>();
-                    imageInfo.put("posturi", downloaduri.toString());
-                    imageInfo.put("description", etDescription.getText().toString());
-
-
-                    if (rbhigh.isChecked()) {
-                        rbValue = rbhigh.getText().toString();
-                    }
-                    if (rbmedium.isChecked()) {
-                        rbValue = rbmedium.getText().toString();
-                    }
-                    if (rblow.isChecked()) {
-                        rbValue = rblow.getText().toString();
+                dataref_notification.child("Users").orderByChild("email").equalTo(dep(title)).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            Log.d("TAG", data.toString());
+                            //Toast.makeText(Post.this, data.child("FCM_TOKEN").getValue(String.class), Toast.LENGTH_SHORT).show();
+                            users.add(data.child("FCM_TOKEN").getValue(String.class));
+                            userids.add(data.getKey());
+                        }
                     }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                    imageInfo.put("severity", rbValue);
-                    imageInfo.put("dateTime", currentDateTimeString);
-                    imageInfo.put("lat", lat.toString());
-                    imageInfo.put("lon", lon.toString());
-                    imageInfo.put("type", spinner.getSelectedItem());
-                    // Toast.makeText(Post.this, "SB: " + ab.toString(), Toast.LENGTH_SHORT).show();
-                    imageInfo.put("metadata", ab.toString());
+                    }
+                });
+                increment = increment + 1;
+                mProgress.setMessage("Uploading ");
+                mProgress.setCancelable(false);
+                mProgress.create();
+                mProgress.show();
 
-                    // Toast.makeText(Post.this, "increment" + increment, Toast.LENGTH_SHORT).show();
+                String profilePicUrl;
+                byte[] data;
+                StorageReference mChildStorage;
 
-                    //saving data of post in database
-                    databaseReference.child("posts").child(String.valueOf(increment)).updateChildren(imageInfo);
-
-                    // saving value of increment for Posts
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("increment", increment);
-                    databaseReference.updateChildren(map);
-
-
-                    //Toast.makeText(Post.this, "Length: " + users.size(), Toast.LENGTH_SHORT).show();
-
-                    for (int i = 0; i < users.size(); i++) {
-
-                        //  Toast.makeText(Post.this, "IDS: " + users.get(i), Toast.LENGTH_SHORT).show();
-                        url += "title=" + title;
-                        url += "&message=" + description;
-                        // url += "&image=" + imageuri;
-                        url += "&userid=" + userID;
-                        url += "&datetime=" + increment;
-                        url += "&regId=" + users.get(i);
+                if (getIntent().getParcelableExtra("imageUri") != null) {
+                    profilePicUrl = bitmap.toString();
+                    cameraImage.setDrawingCacheEnabled(true);
+                    cameraImage.buildDrawingCache();
+                    Bitmap bitmap = cameraImage.getDrawingCache();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    data = baos.toByteArray();
+                    mChildStorage = storageReference.child("Posts").child(profilePicUrl);
+                    //final StorageReference finalMChildStorage = mChildStorage;
+                    mChildStorage.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
 
-                        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
+                            ab.append("image");
+                            downloaduri = taskSnapshot.getDownloadUrl();
 
-                                try {
+                            Map<String, Object> imageInfo = new HashMap<>();
+                            imageInfo.put("posturi", downloaduri.toString());
+                            imageInfo.put("description", etDescription.getText().toString());
 
-                                    Log.e("Response ", response.getString("message"));
-                                    // Toast.makeText(Post.this, "Response " + response.getString("message"), Toast.LENGTH_LONG).show();
-                                } catch (JSONException e) {
-                                    //Toast.makeText(Post.this, "Json: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
 
+                            if (rbhigh.isChecked()) {
+                                rbValue = rbhigh.getText().toString();
                             }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                              //  Log.d("ERROR: ",error.getMessage() );
-                               // Toast.makeText(Post.this, "error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-
+                            if (rbmedium.isChecked()) {
+                                rbValue = rbmedium.getText().toString();
+                            }
+                            if (rblow.isChecked()) {
+                                rbValue = rblow.getText().toString();
                             }
 
-                        });
 
-                        MyVolley.getInstance(Post.this).addToRequestQueue(objectRequest);
+                            imageInfo.put("severity", rbValue);
+                            imageInfo.put("dateTime", currentDateTimeString);
+                            imageInfo.put("lat", lat.toString());
+                            imageInfo.put("lon", lon.toString());
+                            imageInfo.put("type", spinner.getSelectedItem());
+                            // Toast.makeText(Post.this, "SB: " + ab.toString(), Toast.LENGTH_SHORT).show();
+                            imageInfo.put("metadata", ab.toString());
+                            imageInfo.put("postid", String.valueOf(increment));
+                            imageInfo.put("fake", 0);
 
+                            // Toast.makeText(Post.this, "increment" + increment, Toast.LENGTH_SHORT).show();
 
+                            //saving data of post in database
+                            databaseReference.child("posts").child(String.valueOf(increment)).updateChildren(imageInfo);
 
-                    }
+                            Map<String, Object> m = new HashMap<String, Object>();
+                            m.put("ID", "reported");
+                            databaseReference.child("posts").child(String.valueOf(increment)).child("report").updateChildren(m);
 
-                    for (int i = 0; i < userids.size(); i++)
-                    {
-                        Map<String, Object> notification = new HashMap<String, Object>();
-                        notification.put("id", userID);
-                        notification.put("title", spinner.getSelectedItem().toString());
-                        notification.put("description", etDescription.getText().toString());
-
-                        Toast.makeText(Post.this, "i: " + i, Toast.LENGTH_SHORT).show();
-                        
-                        databaseref_savenotification.child("Users/" + userids.get(i)).child("Notification").child(String.valueOf(increment)).updateChildren(notification);
-                    }
-
-
-                    Toast.makeText(Post.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                    mProgress.dismiss();
-                    Intent moveToHome = new Intent(Post.this, Home.class);
-                    moveToHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(moveToHome);
-                    finish();
-                }
-            });
-        } else {
-
-            mChildStorage = storageReference.child("Posts").child(videouri);
-
-            final StorageReference finalMChildStorage = mChildStorage;
-            mChildStorage.putFile(Uri.fromFile(new File(filePath))).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    ab.append("video");
-                    downloaduri = taskSnapshot.getDownloadUrl();
-                    Map<String, Object> imageInfo = new HashMap<>();
-                    imageInfo.put("posturi", downloaduri.toString());
-                    imageInfo.put("description", etDescription.getText().toString());
-
-                    if (rbhigh.isChecked()) {
-                        rbValue = rbhigh.getText().toString();
-                    }
-                    if (rbmedium.isChecked()) {
-                        rbValue = rbmedium.getText().toString();
-                    }
-                    if (rblow.isChecked()) {
-                        rbValue = rblow.getText().toString();
-                    }
-                    imageInfo.put("severity", rbValue);
-                    imageInfo.put("dateTime", currentDateTimeString);
-                    imageInfo.put("lat", lat.toString());
-                    imageInfo.put("lon", lon.toString());
-                    imageInfo.put("type", spinner.getSelectedItem());
-                    imageInfo.put("metadata", ab.toString());
-                   // Toast.makeText(Post.this, "increment" + increment, Toast.LENGTH_SHORT).show();
-
-                    //saving data of post in database
-                    databaseReference.child("posts").child(String.valueOf(increment)).updateChildren(imageInfo);
-
-                    // saving value of increment for Posts
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("increment", increment);
-                    databaseReference.updateChildren(map);
-
-                    //Toast.makeText(Post.this, "Length: " + users.size(), Toast.LENGTH_SHORT).show();
-                    for (int i = 0; i < users.size(); i++) {
-
-                       // Toast.makeText(Post.this, "IDS: " + users.get(i), Toast.LENGTH_SHORT).show();
-                        url += "title=" + title;
-                        url += "&message=" + description;
-                        url += "&image=" + imageuri;
-                        url += "&userid=" + userID;
-                        url += "&datetime=" + increment;
-                        url += "&regId=" + users.get(i);
+                            // saving value of increment for Posts
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("increment", increment);
+                            databaseReference.updateChildren(map);
 
 
-                        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
+                            //Toast.makeText(Post.this, "Length: " + users.size(), Toast.LENGTH_SHORT).show();
 
-                                try {
-                                    Log.e("Response " , response.getString("message"));
+                            for (int i = 0; i < users.size(); i++) {
+
+                                //  Toast.makeText(Post.this, "IDS: " + users.get(i), Toast.LENGTH_SHORT).show();
+                                url += "title=" + title;
+                                url += "&message=" + description;
+                                // url += "&image=" + imageuri;
+                                url += "&userid=" + userID;
+                                url += "&datetime=" + increment;
+                                url += "&regId=" + users.get(i);
+
+
+                                JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        try {
+
+                                            Log.e("Response ", response.getString("message"));
+                                            // Toast.makeText(Post.this, "Response " + response.getString("message"), Toast.LENGTH_LONG).show();
+                                        } catch (JSONException e) {
+                                            //Toast.makeText(Post.this, "Json: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        //  Log.d("ERROR: ",error.getMessage() );
+                                        // Toast.makeText(Post.this, "error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+
+                                    }
+
+                                });
+
+                                MyVolley.getInstance(Post.this).addToRequestQueue(objectRequest);
+
+
+                            }
+
+                            for (int i = 0; i < userids.size(); i++) {
+                                Map<String, Object> notification = new HashMap<String, Object>();
+                                notification.put("id", userID);
+                                notification.put("title", spinner.getSelectedItem().toString());
+                                notification.put("description", etDescription.getText().toString());
+
+                                // Toast.makeText(Post.this, "i: " + i, Toast.LENGTH_SHORT).show();
+
+                                databaseref_savenotification.child("Users/" + userids.get(i)).child("Notification").child(String.valueOf(increment)).updateChildren(notification);
+                            }
+
+
+                            Toast.makeText(Post.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            mProgress.dismiss();
+                            Intent moveToHome = new Intent(Post.this, Home.class);
+                            moveToHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(moveToHome);
+                            finish();
+                        }
+                    });
+                } else {
+
+                    mChildStorage = storageReference.child("Posts").child(videouri);
+
+                    final StorageReference finalMChildStorage = mChildStorage;
+                    mChildStorage.putFile(Uri.fromFile(new File(filePath))).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            ab.append("video");
+                            downloaduri = taskSnapshot.getDownloadUrl();
+                            Map<String, Object> imageInfo = new HashMap<>();
+                            imageInfo.put("posturi", downloaduri.toString());
+                            imageInfo.put("description", etDescription.getText().toString());
+
+                            if (rbhigh.isChecked()) {
+                                rbValue = rbhigh.getText().toString();
+                            }
+                            if (rbmedium.isChecked()) {
+                                rbValue = rbmedium.getText().toString();
+                            }
+                            if (rblow.isChecked()) {
+                                rbValue = rblow.getText().toString();
+                            }
+                            imageInfo.put("severity", rbValue);
+                            imageInfo.put("dateTime", currentDateTimeString);
+                            imageInfo.put("lat", lat.toString());
+                            imageInfo.put("lon", lon.toString());
+                            imageInfo.put("type", spinner.getSelectedItem());
+                            imageInfo.put("metadata", ab.toString());
+                            // Toast.makeText(Post.this, "increment" + increment, Toast.LENGTH_SHORT).show();
+
+                            //saving data of post in database
+                            databaseReference.child("posts").child(String.valueOf(increment)).updateChildren(imageInfo);
+
+                            // saving value of increment for Posts
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("increment", increment);
+                            databaseReference.updateChildren(map);
+
+                            //Toast.makeText(Post.this, "Length: " + users.size(), Toast.LENGTH_SHORT).show();
+                            for (int i = 0; i < users.size(); i++) {
+
+                                // Toast.makeText(Post.this, "IDS: " + users.get(i), Toast.LENGTH_SHORT).show();
+                                url += "title=" + title;
+                                url += "&message=" + description;
+                                url += "&image=" + imageuri;
+                                url += "&userid=" + userID;
+                                url += "&datetime=" + increment;
+                                url += "&regId=" + users.get(i);
+
+
+                                JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        try {
+                                            Log.e("Response ", response.getString("message"));
 //                                    Toast.makeText(Post.this, "Response " + response.getString("message"), Toast.LENGTH_LONG).show();
-                                } catch (JSONException e) {
-                                    //Toast.makeText(Post.this, "Json: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
+                                        } catch (JSONException e) {
+                                            //Toast.makeText(Post.this, "Json: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        // Log.d("ERROR: ",error.getMessage() );
+                                        // Toast.makeText(Post.this, "error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+
+                                    }
+
+                                });
+
+                                MyVolley.getInstance(Post.this).addToRequestQueue(objectRequest);
 
                             }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                               // Log.d("ERROR: ",error.getMessage() );
-                               // Toast.makeText(Post.this, "error: " + error.getMessage(), Toast.LENGTH_LONG).show();
 
+                            for (int i = 0; i < userids.size(); i++) {
+                                Map<String, Object> notification = new HashMap<String, Object>();
+                                notification.put("id", userID);
+                                notification.put("title", spinner.getSelectedItem().toString());
+                                notification.put("description", etDescription.getText().toString());
+
+                                //  Toast.makeText(Post.this, "i: " + i, Toast.LENGTH_SHORT).show();
+
+                                databaseref_savenotification.child("Users/" + userids.get(i)).child("Notification").child(String.valueOf(increment)).updateChildren(notification);
                             }
 
-                        });
 
-                        MyVolley.getInstance(Post.this).addToRequestQueue(objectRequest);
+                            Toast.makeText(Post.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            mProgress.dismiss();
+                            Intent moveToHome = new Intent(Post.this, Home.class);
+                            moveToHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(moveToHome);
+                            finish();
+                        }
 
-                    }
-
-                    for (int i = 0; i < userids.size(); i++)
-                    {
-                        Map<String, Object> notification = new HashMap<String, Object>();
-                        notification.put("id", userID);
-                        notification.put("title", spinner.getSelectedItem().toString());
-                        notification.put("description", etDescription.getText().toString());
-
-                        Toast.makeText(Post.this, "i: " + i, Toast.LENGTH_SHORT).show();
-
-                        databaseref_savenotification.child("Users/" + userids.get(i)).child("Notification").child(String.valueOf(increment)).updateChildren(notification);
-                    }
+                    });
 
 
-                    Toast.makeText(Post.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                    mProgress.dismiss();
-                    Intent moveToHome = new Intent(Post.this, Home.class);
-                    moveToHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(moveToHome);
-                    finish();
                 }
 
-            });
-
-
-
+            }
+        }
+        else
+        {
+            gps.showSettingsAlert();
         }
 
 
@@ -687,31 +729,22 @@ public class Post extends AppCompatActivity implements AsyncResponse {
 
         filePath = output;
         video.setVideoURI(Uri.parse(output));
-       // Toast.makeText(Post.this, "File Path: " + output, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(Post.this, "File Path: " + output, Toast.LENGTH_SHORT).show();
     }
 
 
-
-    public String dep(String dep)
-    {
+    public String dep(String dep) {
         String dept = null;
-        if(dep.equals("Bombblast"))
-        {
+        if (dep.equals("Bombblast")) {
             dept = "h@gmail.com";
-        }
-        else if(dep.equals("Earthquack"))
-        {
+        } else if (dep.equals("Earthquack")) {
             dept = "h@gmail.com";
-        }
-        else if(dep.equals("Building collaps"))
-        {
+        } else if (dep.equals("Building collaps")) {
             dept = "h@gmail.com";
-        }
-        else if(dep.equals("Road problem"))
-        {
+        } else if (dep.equals("Road problem")) {
             dept = "h@gmail.com";
         }
 
-     return dept;
+        return dept;
     }
 }

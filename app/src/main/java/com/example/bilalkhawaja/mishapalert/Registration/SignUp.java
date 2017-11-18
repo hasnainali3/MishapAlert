@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignUp extends AppCompatActivity {
 
@@ -29,6 +30,7 @@ public class SignUp extends AppCompatActivity {
     private FirebaseAuth mfirebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     String mverificationid;
+    FirebaseUser user ;
 
     @Override
     protected void onStart() {
@@ -47,7 +49,9 @@ public class SignUp extends AppCompatActivity {
         imgvBack = (ImageView) findViewById(R.id.imgvBack);
         btnVerify = (Button) findViewById(R.id.btnVerify);
         progressDialog = new ProgressDialog(this);
+
         mfirebaseAuth = FirebaseAuth.getInstance();
+        user = mfirebaseAuth.getCurrentUser();
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -111,6 +115,7 @@ public class SignUp extends AppCompatActivity {
                                         i.putExtra("email", email);
                                         i.putExtra("pass", pass);
                                         startActivity(i);
+
                                     } else {
 
                                         Toast.makeText(SignUp.this, "Email already exists", Toast.LENGTH_SHORT).show();

@@ -89,6 +89,17 @@
             android:text="21/3/2017"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tvreport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:padding="10dp"
+            android:text="Report"
+            android:textColor="#FF0000"
+            android:textSize="13sp" />
+
 
     </RelativeLayout>
 
@@ -98,7 +109,7 @@
         android:layout_below="@+id/relLayout2"
         android:layout_marginBottom="15dp"
         android:descendantFocusability="blocksDescendants"
-        android:paddingTop="10dp">
+        android:padding="5dp">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/ivPost"

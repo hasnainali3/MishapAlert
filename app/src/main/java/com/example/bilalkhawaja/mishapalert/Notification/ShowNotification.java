@@ -72,7 +72,7 @@ public class ShowNotification extends AppCompatActivity {
         video = (VideoView) findViewById(R.id.video);
 
         final String userid = getIntent().getStringExtra("userid");
-        Toast.makeText(this, "ID: " + userid, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "ID: " + userid, Toast.LENGTH_SHORT).show();
         databaseReference.child(userid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

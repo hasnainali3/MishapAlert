@@ -1,8 +1,6 @@
 package com.example.bilalkhawaja.mishapalert.Registration;
 
-/**
- * Created by Zahid on 10/26/17.
- */
+import java.util.HashMap;
 
 public class PostModel {
 
@@ -10,10 +8,83 @@ public class PostModel {
     private String description;
     private String lat;
     private String lon;
+    private HashMap<String ,String> report;
     private String metadata;
     private String posturi;
     private String severity;
     private String type;
+    private String postid;
+    private int fake;
+    private String name;
+    private String uri;
+    private String id;
+    private String radius;
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public HashMap<String, String> getReport() {
+        return report;
+    }
+
+    public void setReport(HashMap<String, String> report) {
+        this.report = report;
+    }
+
+    public int getFake() {
+        return fake;
+    }
+
+    public void setFake(int fake) {
+        this.fake = fake;
+    }
+
+
+    public String getPostid() {
+        return postid;
+    }
+
+    public void setPostid(String postid) {
+        this.postid = postid;
+    }
+
+    public String getRadius() {
+        return radius;
+    }
+
+    public void setRadius(String radius) {
+        this.radius = radius;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public PostModel() {
     }

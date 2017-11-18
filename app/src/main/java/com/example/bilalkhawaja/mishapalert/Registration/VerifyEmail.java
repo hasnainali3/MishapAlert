@@ -74,6 +74,24 @@ public class VerifyEmail extends AppCompatActivity {
         };
 
 
+        user.sendEmailVerification().addOnCompleteListener(VerifyEmail.this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+
+                    Toast.makeText(VerifyEmail.this, "Verification email sent to:" + email, Toast.LENGTH_SHORT).show();
+                    btnVerify.setVisibility(View.VISIBLE);
+                   /* emailVerifiedBTN.setVisibility(View.INVISIBLE);*/
+
+                }
+                else {
+                    Toast.makeText(VerifyEmail.this, "Failed to send Verification email", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
 
         btnVerify.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +106,7 @@ public class VerifyEmail extends AppCompatActivity {
                         }
 
                         else if(user.isEmailVerified()) {
+
                             Intent intent = new Intent(VerifyEmail.this,setprofile.class);
                             startActivity(intent);
                             finish();

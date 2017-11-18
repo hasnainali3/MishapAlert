@@ -12,12 +12,11 @@ public class User {
 
     private String key;
     private String FCM_TOKEN;
-    private HashMap<String, String> Following;
-    private HashMap<String, String> Follower;
     private ArrayList<NotificationModel> Notification;
     private String Password;
     private String city;
     private String email;
+    private String id;
     private String latitude;
     private String longitude;
     private String name;
@@ -42,25 +41,11 @@ public class User {
         return FCM_TOKEN;
     }
 
-    public HashMap<String, String> getFollowing() {
-        return Following;
-    }
-
-    public void setFollowing(HashMap<String, String> following) {
-        Following = following;
-    }
 
     public ArrayList<NotificationModel> getNotification() {
         return Notification;
     }
 
-    public HashMap<String, String> getFollower() {
-        return Follower;
-    }
-
-    public void setFollower(HashMap<String, String> follower) {
-        Follower = follower;
-    }
 
     public void setNotification(ArrayList<NotificationModel> notification) {
         Notification = notification;
@@ -144,5 +129,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -172,6 +172,7 @@ public class OtherUser extends AppCompatActivity {
                 followings = Integer.parseInt(String.valueOf(map.get("following")));
                 final String downloadURI = map.get("uri");
 
+                final Double radius = Double.valueOf(String.valueOf(map.get("radius")));
 
                 name.setText(Name);
                 city.setText(City);
@@ -192,7 +193,7 @@ public class OtherUser extends AppCompatActivity {
                             String lat = ds.child("lat").getValue(String.class);
                             String lon = ds.child("lon").getValue(String.class);
                             String metadata = ds.child("metadata").getValue(String.class);
-                            DataModel dataModel = new DataModel(other_userid,Name, dateTime, description, downloadURI, posturi, lon, lat, severity,ds.getKey().toString(),metadata);
+                            DataModel dataModel = new DataModel(other_userid,Name, dateTime, description, downloadURI, posturi, lon, lat, severity,ds.getKey().toString(),metadata, radius);
                             list.add(dataModel);
                         }
 

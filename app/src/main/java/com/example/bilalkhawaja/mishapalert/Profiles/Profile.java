@@ -169,7 +169,7 @@ public class Profile extends AppCompatActivity {
                 String follower = String.valueOf(map.get("followers"));
                 String followin = String.valueOf(map.get("following"));
                 final String downloadURI = map.get("uri");
-
+                final Double radius = Double.valueOf(String.valueOf(map.get("radius")));
                 //setting details
                 Picasso.with(Profile.this).load(downloadURI).fit().centerCrop().into(profileImage);
                 name.setText(Name);
@@ -179,7 +179,7 @@ public class Profile extends AppCompatActivity {
                 following.setText(followin);
 
 
-               // Toast.makeText(Profile.this, increment+"", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Profile.this, radius+"", Toast.LENGTH_SHORT).show();
                 //For retrieving the detail of user posts and setting it in custom listview through DataModel class
                 if(!increment.equals(0))
                 {
@@ -197,7 +197,7 @@ public class Profile extends AppCompatActivity {
                                 String lon = ds.child("lon").getValue(String.class);
                                 String metadata = ds.child("metadata").getValue(String.class);
 
-                                DataModel dataModel = new DataModel(uID, Name, dateTime, description, downloadURI, posturi, lon, lat, severity, ds.getKey().toString(),metadata);
+                                DataModel dataModel = new DataModel(uID, Name, dateTime, description, downloadURI, posturi, lon, lat, severity, ds.getKey().toString(),metadata, radius);
                                 list.add(dataModel);
                             }
 

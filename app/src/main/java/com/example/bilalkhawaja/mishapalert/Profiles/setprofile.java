@@ -51,7 +51,7 @@ public class setprofile extends AppCompatActivity {
     ImageView ivsave;
     SimpleDraweeView ivProfilePicture;
     int increment = 0, follower = 0, following = 0;
-    Double lat = 0.0, lon = 0.0;
+    String lat = "0.0" , lon = "0.0" ;
     Uri imageHoldUri = null;
     Uri downloadURI = Uri.parse("https://firebasestorage.googleapis.com/v0/b/mishap-alert.appspot.com/o/profilepicture.png?alt=media&token=b07a1751-d695-4bd0-949d-e2707739b5f1");
     FirebaseUser user;
@@ -74,8 +74,8 @@ public class setprofile extends AppCompatActivity {
         if(Build.VERSION.SDK_INT >= 23)
         if(checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED )
         {
-            lat = gps.getLatitude();
-            lon = gps.getLongitude();
+            lat = String.valueOf(gps.getLatitude());
+            lon = String.valueOf(gps.getLongitude());
         }
         else
         {
@@ -303,12 +303,12 @@ public class setprofile extends AppCompatActivity {
             imageInfo.put("increment", increment);
             imageInfo.put("followers", follower);
             imageInfo.put("following", following);
-            imageInfo.put("latitude", lat);
-            imageInfo.put("longitude", lon);
-            imageInfo.put("radius", 10);
+         /*   imageInfo.put("latitude", lat);
+            imageInfo.put("longitude", lon);*/
+            imageInfo.put("radius", "10");
 
             //saving values in database
-            databaseReference.child(city.toLowerCase()).child(id).updateChildren(imageInfo);
+            databaseReference.child(id).updateChildren(imageInfo);
             Toast.makeText(setprofile.this, "Profile Completed", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
 

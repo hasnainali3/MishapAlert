@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.bilalkhawaja.mishapalert.CheckIntenet.CheckNetwork;
 import com.example.bilalkhawaja.mishapalert.Followers.OtherUser;
+import com.example.bilalkhawaja.mishapalert.NewFeeds.CustomAdapter_Home;
 import com.example.bilalkhawaja.mishapalert.NewFeeds.Home;
 import com.example.bilalkhawaja.mishapalert.Notification.Notification_View;
 import com.example.bilalkhawaja.mishapalert.Posts.Post;
@@ -40,6 +41,8 @@ import com.example.bilalkhawaja.mishapalert.Profiles.CustomAdapter;
 import com.example.bilalkhawaja.mishapalert.Profiles.DataModel;
 import com.example.bilalkhawaja.mishapalert.Profiles.Profile;
 import com.example.bilalkhawaja.mishapalert.R;
+import com.example.bilalkhawaja.mishapalert.Registration.PostModel;
+import com.example.bilalkhawaja.mishapalert.Registration.User;
 import com.example.bilalkhawaja.mishapalert.Utilities.BottomNavigationViewHelper;
 import com.example.bilalkhawaja.mishapalert.Utilities.Settings;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static com.example.bilalkhawaja.mishapalert.R.id.Home;
+import static com.example.bilalkhawaja.mishapalert.R.id.Search;
 
 public class Search extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 3;
@@ -62,6 +66,7 @@ public class Search extends AppCompatActivity {
     private static final int MY_CAMERA_REQUEST_CODE = 100;
     android.widget.SearchView searchView;
     ArrayList<DataModel> list;
+    CustomAdapter_Home customAdapter_home;
     ListView listView;
     CustomAdapter adapter;
     ImageView imageView;
@@ -205,6 +210,7 @@ public class Search extends AppCompatActivity {
                 list.clear();
 
                 if(currentuser_city != null) {
+                    final ArrayList<PostModel> postModels = new ArrayList<>();
                     databaseReference_Searchcity.child(currentuser_city.toLowerCase()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                         @Override
                         public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
@@ -213,11 +219,13 @@ public class Search extends AppCompatActivity {
                                 databaseReference.child(data.getKey()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                                     @Override
                                     public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-                                        Log.d("onDataChange1: ", dataSnapshot.child("name").getValue(String.class));
+                                        Log.d("onDataChange1: ", dataSnapshot.toString());
+
                                         names = dataSnapshot.child("name").getValue(String.class);
                                         profileImage = dataSnapshot.child("uri").getValue(String.class);
-                                        following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
+                                        //following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
 
+                                        final User user = dataSnapshot.getValue(User.class);
 
                                         databaseReference.child(data.getKey()+"/posts").orderByChild("type").equalTo(spFilter.getSelectedItem().toString()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                                             @Override
@@ -228,27 +236,20 @@ public class Search extends AppCompatActivity {
                                                 for(com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
                                                 {
 
-                                                    /*Log.d("data", data.toString());
-                                                    Toast.makeText(Search.this, data.child("metadata").getValue(String.class) , Toast.LENGTH_SHORT).show();*/
-                                                    String description = data.child("description").getValue(String.class);
-                                                    String dateTime = data.child("dateTime").getValue(String.class);
-                                                    String posturi = data.child("posturi").getValue(String.class);
-                                                    String severity = data.child("severity").getValue(String.class);
-                                                    String lat = data.child("lat").getValue(String.class);
-                                                    String lon = data.child("lon").getValue(String.class);
-                                                    String metadata = data.child("metadata").getValue(String.class);
+                                                    Log.d("data", data.toString());
+                                                    PostModel postModel = data.getValue(PostModel.class);
+                                                    postModel.setName(user.getName());
+                                                    postModel.setId(user.getId());
+                                                    postModel.setUri(user.getUri());
 
-
-                                                    DataModel dataModel = new DataModel(userID, names, dateTime, description, profileImage, posturi, lon, lat, severity, data.getKey().toString(), metadata);
-                                                    list.add(dataModel);
-
+                                                    postModels.add(postModel);
 
 
                                                 }
 
-                                                Collections.reverse(list);
-                                                adapter = new CustomAdapter(Search.this, list);
-                                                listView.setAdapter(adapter);
+                                                Collections.reverse(postModels);
+                                                customAdapter_home = new CustomAdapter_Home(com.example.bilalkhawaja.mishapalert.Searchs.Search.this, postModels);
+                                                listView.setAdapter(customAdapter_home);
 
                                             }
 
@@ -296,7 +297,43 @@ public class Search extends AppCompatActivity {
                 imageView.setImageResource(android.R.color.transparent);
                 linearlayout2.setVisibility(View.VISIBLE);
                 if(currentuser_city != null) {
-                databaseReference_Searchcity.child(currentuser_city.toLowerCase()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+
+                    final ArrayList<User> userinacity = new ArrayList<>();
+                    final ArrayList<PostModel> postModels = new ArrayList<>();
+                    FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("city").equalTo(currentuser_city.toLowerCase()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                                User user = dataSnapshot1.getValue(User.class);
+                                userinacity.add(user);
+                            }
+                            for (User user : userinacity) {
+                                if(user.getPosts()!=null)
+                                    for (PostModel postModel : user.getPosts()) {
+                                        if(postModel!=null) {
+                                            postModel.setName(user.getName());
+                                            postModel.setId(user.getId());
+                                            postModel.setUri(user.getUri());
+                                            postModels.add(postModel);
+
+                                        }
+
+                                    }
+                            }
+                            Collections.reverse(postModels);
+                            customAdapter_home = new CustomAdapter_Home(Search.this, postModels);
+                            listView.setAdapter(customAdapter_home);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+               /* databaseReference_Searchcity.child(currentuser_city.toLowerCase()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                     @Override
                     public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
                         for(final com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
@@ -362,7 +399,7 @@ public class Search extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                });*/
                 }
             }
         });

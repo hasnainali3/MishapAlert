@@ -98,12 +98,12 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
+                if(!TextUtils.isEmpty(etUsername.getText()))
+                {
                 mAuth.sendPasswordResetEmail(etUsername.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(!TextUtils.isEmpty(etUsername.getText()))
-                        {
+
                             if(task.isSuccessful())
                             {
                                 Toast.makeText(Login.this, "Password verification link has been sent", Toast.LENGTH_SHORT).show();
@@ -112,15 +112,16 @@ public class Login extends AppCompatActivity {
 
                                 Toast.makeText(Login.this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                        else {
-                            etUsername.setError("Enter Email.");
 
-                        }
 
 
                     }
                 });
+                }
+                else {
+                    etUsername.setError("Enter Email.");
+
+                }
             }
         });
     }

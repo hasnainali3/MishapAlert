@@ -278,6 +278,7 @@ public class CustomAdapter extends ArrayAdapter {
                 Intent intent = new Intent(context, MapsActivity2.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("lat", lat.getText().toString());
                 intent.putExtra("lon", lon.getText().toString());
+                intent.putExtra("radius", data.getRadius().toString());
                 context.startActivity(intent);
 
             }

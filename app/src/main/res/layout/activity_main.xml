@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/timg">
+        android:background="@drawable/appbackground">
         <TextView
             android:id="@+id/sin"
             android:layout_width="match_parent"
@@ -21,11 +21,12 @@
             android:layout_marginBottom="45dp"
             />
         <TextView
-            android:background="@drawable/logo"
+            android:background="@drawable/applogo"
             android:id="@+id/imac"
-            android:layout_height="40dp"
+            android:layout_width="280dp"
+            android:layout_height="70dp"
             android:layout_centerInParent="true"
-            android:layout_width="200dp" />
+            />
         <customfonts.MyTextView
             android:id="@+id/account"
             android:layout_width="match_parent"
