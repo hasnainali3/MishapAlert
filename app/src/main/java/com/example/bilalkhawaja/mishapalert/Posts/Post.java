@@ -136,7 +136,7 @@ public class Post extends AppCompatActivity implements AsyncResponse {
         ab = new StringBuilder();
 
         media = new MediaController(this);
-        url = "http://192.168.8.139/projectapi/index.php?";
+        url = "http://192.168.137.1/projectapi/index.php?";
 
         // url = "http://mihsapalert.000webhostapp.com/index.php?";
 
@@ -148,14 +148,14 @@ public class Post extends AppCompatActivity implements AsyncResponse {
         //getting time and date
         currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
-        String[] types = {"Select","Bombblast", "Earthquack", "Building collaps", "Road problem"};
+        String[] types = {"Select Incident/Disaster type:","Bombblast", "Earthquack", "Building collaps", "Road problem"};
         ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, types);
-        
+
 
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED & checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lat = gps.getLatitude();
             lon = gps.getLongitude();
-            //Toast.makeText(Post.this, lat + "....\n" + lon, Toast.LENGTH_SHORT).show();
+            Toast.makeText(Post.this, lat + "....\n" + lon, Toast.LENGTH_SHORT).show();
         } else {
             String[] Permissionrequet = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             requestPermissions(Permissionrequet, MY_LOCATION_REQUEST_CODE);
@@ -269,7 +269,7 @@ public class Post extends AppCompatActivity implements AsyncResponse {
                 // Toast.makeText(Post.this, "increment: " + increment, Toast.LENGTH_SHORT).show();
                 Map<String, String> map1 = dataSnapshot.getValue(Map.class);
                 radius = Double.valueOf(map1.get("radius"));
-                // Toast.makeText(Post.this, "Radius" + radius, Toast.LENGTH_SHORT).show();
+                Toast.makeText(Post.this, "Radius" + radius, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -418,8 +418,12 @@ public class Post extends AppCompatActivity implements AsyncResponse {
 
     private void saveUserPost() {
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
         if(isGPSEnabled)
         {
+            lat = gps.getLatitude();
+            lon = gps.getLongitude();
+
             if(spinner.getSelectedItem().equals("Select"))
             {
                 Toast.makeText(this, "Select disaster/incident type", Toast.LENGTH_SHORT).show();
@@ -736,13 +740,13 @@ public class Post extends AppCompatActivity implements AsyncResponse {
     public String dep(String dep) {
         String dept = null;
         if (dep.equals("Bombblast")) {
-            dept = "h@gmail.com";
+            dept = "hasnainali555@gmail.com";
         } else if (dep.equals("Earthquack")) {
-            dept = "h@gmail.com";
+            dept = "bilalkhawaja1313@gmail.com";
         } else if (dep.equals("Building collaps")) {
-            dept = "h@gmail.com";
+            dept = "bilalkhawaja1313@gmail.com";
         } else if (dep.equals("Road problem")) {
-            dept = "h@gmail.com";
+            dept = "bilalkhawaja1313@gmail.com";
         }
 
         return dept;

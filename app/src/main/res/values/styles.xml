@@ -19,6 +19,9 @@
     <style name="CustomTheme.PopupOverlay" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="colorPrimaryDark">@color/MainColor</item>
     </style>
+    <style name="spinner_style">
+        <item name="android:background">@drawable/gradient_spinner</item>
+    </style>
 
 
 

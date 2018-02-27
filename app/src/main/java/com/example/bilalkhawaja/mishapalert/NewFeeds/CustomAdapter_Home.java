@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -31,6 +32,8 @@ import com.example.bilalkhawaja.mishapalert.Registration.PostModel;
 import com.example.bilalkhawaja.mishapalert.Utilities.SendMail;
 import com.example.bilalkhawaja.mishapalert.Utilities.imagezoom;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,6 +59,7 @@ public class CustomAdapter_Home extends ArrayAdapter {
     Uri imageuri = null;
     WindowManager.LayoutParams lp;
     ProgressDialog progressDialog;
+    RelativeLayout RLreport;
 
     public CustomAdapter_Home(Context context, ArrayList<PostModel> list) {
         super(context, R.layout.customlayout, list);
@@ -136,8 +140,10 @@ public class CustomAdapter_Home extends ArrayAdapter {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
                 builder.setTitle("Report");
                 builder.setMessage("Are you sure you want to report this post?");
+                builder.setView(R.layout.report);
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -157,9 +163,15 @@ public class CustomAdapter_Home extends ArrayAdapter {
                                 FirebaseDatabase.getInstance().getReference().child("Users/" + data.getId() + "/posts/" + data.getPostid()).child("report").updateChildren(map);
 
                                // Toast.makeText(context, fake+"" , Toast.LENGTH_SHORT).show();
-                                if(fake == 3)
+                                if(fake == 5)
                                 {
                                     FirebaseDatabase.getInstance().getReference().child("Users/" + data.getId() + "/posts/" + data.getPostid()).removeValue();
+                                    FirebaseAuth.getInstance().getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                        }
+                                    });
 
                                     //Creating SendMail object
                                     SendMail sm = new SendMail(context, data.getEmail(), "Mishap Alert Report ", "Mishp Alert Message");

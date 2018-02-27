@@ -1,6 +1,7 @@
 package com.example.bilalkhawaja.mishapalert.Profiles;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -224,7 +225,13 @@ public class setprofile extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
 
         //SAVE URI FROM GALLERY
-        if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
+        if(resultCode == Activity.RESULT_CANCELED)
+        {
+            Intent i = new Intent(setprofile.this, setprofile.class);
+            startActivity(i);
+            finish();
+        }
+        else if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
             imageHoldUri = imageUri;
 
@@ -248,27 +255,29 @@ public class setprofile extends AppCompatActivity {
 
 
         //image crop library code
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
+        if(imageHoldUri!=null) {
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (resultCode == RESULT_OK) {
 
-                imageHoldUri = result.getUri();
+                    imageHoldUri = result.getUri();
 
-                ivProfilePicture.setImageURI(imageHoldUri);
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+                    ivProfilePicture.setImageURI(imageHoldUri);
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Exception error = result.getError();
+                }
             }
+
+            StorageReference filepath = storageReference.child("Photos").child(userID);
+            filepath.putFile(imageHoldUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    downloadURI = taskSnapshot.getDownloadUrl();
+                    progressDialog.dismiss();
+
+                }
+            });
         }
-
-        StorageReference filepath = storageReference.child("Photos").child(userID);
-        filepath.putFile(imageHoldUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                downloadURI = taskSnapshot.getDownloadUrl();
-                progressDialog.dismiss();
-
-            }
-        });
     }
 
     //Updating User Profile information

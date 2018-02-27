@@ -65,15 +65,24 @@ public class Home extends AppCompatActivity {
     private DatabaseReference databaseReference, databaseref_currentuser_post, databaseref_following_check, databaseref_otheruser_post, databaseReference_Searchcity;
     private Firebase firebaseRef;
     FirebaseUser user;
-    Double lat, lon;
+    // Double lat, lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        gps = new GPSTracker(Home.this);
-        lat = gps.getLatitude();
-        lon = gps.getLongitude();
+
+        if (Build.VERSION.SDK_INT >= 23)
+            if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+               /* gps = new GPSTracker(Home.this);
+               *//* lat = gps.getLatitude();
+                lon = gps.getLongitude();*/
+            } else {
+                String[] Permissionrequet = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(Permissionrequet, 10);
+
+            }
+
 
         postModel = new ArrayList<>();
 
@@ -103,6 +112,7 @@ public class Home extends AppCompatActivity {
         // <--Firebase storing Registration Token in database--->
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        databaseref_otheruser_post = FirebaseDatabase.getInstance().getReference("Users");
         databaseref_currentuser_post = databaseReference;
         databaseref_following_check = databaseReference.child(userID).child("Following");
         databaseReference_Searchcity = FirebaseDatabase.getInstance().getReference();
@@ -114,24 +124,27 @@ public class Home extends AppCompatActivity {
             public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
 
 
-                User user = dataSnapshot.getValue(User.class);
+              User user = dataSnapshot.getValue(User.class);
 
                 //this is method to find all the post from peshawar
-                final ArrayList<User> userinacity = new ArrayList<>();
-                final ArrayList<PostModel> postModels = new ArrayList<>();
+
                 FirebaseDatabase.getInstance().getReference().child("Users").orderByChild("city").equalTo(user.getCity()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        final ArrayList<User> userinacity = new ArrayList<>();
+                        final ArrayList<PostModel> postModels = new ArrayList<>();
+
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
                             User user = dataSnapshot1.getValue(User.class);
+                            following = Integer.parseInt(String.valueOf(dataSnapshot1.child("following").getValue(Long.class)));
                             userinacity.add(user);
                         }
                         for (User user : userinacity) {
                             if (user.getPosts() != null)
                                 for (PostModel postModel : user.getPosts()) {
                                     if (postModel != null) {
-                                       // Log.d("Postmodel", postModel.toString());
+                                        // Log.d("Postmodel", postModel.toString());
                                         postModel.setName(user.getName());
                                         postModel.setId(user.getId());
                                         postModel.setUri(user.getUri());
@@ -262,84 +275,127 @@ public class Home extends AppCompatActivity {
 
 
         //check if following exists and reteriving their data
-        databaseref_following_check.addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-
-            String id, othername, picture;
-
-            @Override
-            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-
-                if (following != 0) {
-
-                    for (com.google.firebase.database.DataSnapshot data : dataSnapshot.getChildren()) {
-                        id = data.getKey().toString();
-
-                        databaseReference.child(id).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-                            @Override
-                            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-                                othername = dataSnapshot.child("username").getValue(String.class);
-                                picture = dataSnapshot.child("uri").getValue(String.class);
-                                increment_following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
-                                final double radius = dataSnapshot.child("radius").getValue(Double.class);
-                                final String radiuss = dataSnapshot.child("radius").getValue(String.class);
-                                 Toast.makeText(Home.this,  "inc: "+ radius, Toast.LENGTH_SHORT).show();
-                                databaseref_otheruser_post = databaseReference.child(id).child("posts");
-                                if (increment_following == 0) {
-                                    //do nothing
-                                } else {
-                                    databaseref_otheruser_post.limitToLast(increment_following).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-                                            for (com.google.firebase.database.DataSnapshot ds : dataSnapshot.getChildren()) {
-
-
-                                                String description = ds.child("description").getValue(String.class);
-                                                String dateTime = ds.child("dateTime").getValue(String.class);
-                                                String posturi = ds.child("posturi").getValue(String.class);
-                                                String severity = ds.child("severity").getValue(String.class);
-                                                String lat = ds.child("lat").getValue(String.class);
-                                                String lon = ds.child("lon").getValue(String.class);
-                                                String metadata = ds.child("metadata").getValue(String.class);
-
-                                                DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity, ds.getKey().toString(), metadata, radius);
-                                                list.add(dataModel1);
-                                            }
-                                            Collections.reverse(list);
-                                            // adapter = new CustomAdapter(Home.this, list);
-                                            listView.setAdapter(adapter);
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
-
+//       databaseref_following_check.addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//
+//            String id, othername, picture;
+//
+//            @Override
+//            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//
+//                //  Log.d("DATASNAPSHOT", "1 "+dataSnapshot.toString());
+//
+//
+//
+//
+//                for (com.google.firebase.database.DataSnapshot data : dataSnapshot.getChildren()) {
+//                    id = data.getKey().toString();
+//
+//
+//                    databaseReference.child(id).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//
+//                            //Log.d("DATASNAPSHOT", "3"+);
+//                            if (dataSnapshot.getValue() != null) {
+//
+//                              //  Log.d("DATASNAPSHOT", "2 "+ dataSnapshot.toString());
+//                                othername = dataSnapshot.child("username").getValue(String.class);
+//                                picture = dataSnapshot.child("uri").getValue(String.class);
+//                                increment_following = Integer.parseInt(String.valueOf(dataSnapshot.child("increment").getValue(Long.class)));
+//                                //final String radius = dataSnapshot.child("radius").getValue(String.class);
+//                                final String radiuss = dataSnapshot.child("radius").getValue(String.class);
+//                             // Toast.makeText(Home.this, "inc: " + increment_following, Toast.LENGTH_SHORT).show();
+//                                Log.d("TAG", othername + increment_following + dataSnapshot.getKey());
+//                              // databaseref_otheruser_post = databaseReference.child(dataSnapshot.getKey()).child("posts");
+//                                if (increment_following == 0) {
+//                                    //do nothing
+//                                } else {
+//                                   // Toast.makeText(Home.this, "else "+ id, Toast.LENGTH_SHORT).show();
+//                                    final ArrayList<PostModel> postModels = new ArrayList<>();
+//
+//                                    databaseref_otheruser_post.child(dataSnapshot.getKey()+"/posts").addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//
+//                                            for (com.google.firebase.database.DataSnapshot ds : dataSnapshot.getChildren()) {
+//
+//                                                String description = ds.child("description").getValue(String.class);
+//                                                String dateTime = ds.child("dateTime").getValue(String.class);
+//                                                String posturi = ds.child("posturi").getValue(String.class);
+//                                                String severity = ds.child("severity").getValue(String.class);
+//                                                String lat = ds.child("lat").getValue(String.class);
+//                                                String lon = ds.child("lon").getValue(String.class);
+//                                                String metadata = ds.child("metadata").getValue(String.class);
+//
+//                                               /* DataModel dataModel1 = new DataModel(id, othername, dateTime, description, picture, posturi, lon, lat, severity, ds.getKey().toString(), metadata, radius);
+//                                                list.add(dataModel1);*/
+//
+//
+//                                                PostModel postModel = new PostModel();
+//                                                postModel.setId(id);
+//                                                postModel.setName(othername);
+//                                                postModel.setDateTime(ds.child("dateTime").getValue(String.class));
+//                                                postModel.setDescription(ds.child("description").getValue(String.class));
+//                                                postModel.setUri(picture);
+//                                                postModel.setPosturi(ds.child("posturi").getValue(String.class));
+//                                                postModel.setLon(ds.child("lat").getValue(String.class));
+//                                                postModel.setLat(ds.child("lat").getValue(String.class));
+//                                                postModel.setSeverity(ds.child("severity").getValue(String.class));
+//                                                postModel.setPostid(ds.getKey().toString());
+//                                                postModel.setMetadata(ds.child("metadata").getValue(String.class));
+//                                                postModel.setRadius(radiuss);
+//                                                postModels.add(postModel);
+//                                               // Log.d("DATASNAPSHOT", "3 " + ds.child("posturi").getValue(String.class));
+//
+//
+//                                            }
+//
+//                                            /*Collections.reverse(list);
+//                                            adapter = new CustomAdapter(Home.this, list);
+//                                            listView.setAdapter(adapter);*/
+//                                            Collections.reverse(postModels);
+//                                            customAdapter_home = new CustomAdapter_Home(Home.this, postModels);
+//                                            listView.setAdapter(customAdapter_home);
+//
+//
+//
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                }
+//
+//
+//                            }
+//                        }
+//
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//
+//
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//        });
+//
 
         //For bottom Navigation bar
         BottomNavigation();

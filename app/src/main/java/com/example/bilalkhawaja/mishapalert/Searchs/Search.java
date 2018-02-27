@@ -123,7 +123,7 @@ public class Search extends AppCompatActivity {
         //Arraylist for getting names
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        databaseReference_Searchcity = FirebaseDatabase.getInstance().getReference();
+        databaseReference_Searchcity = FirebaseDatabase.getInstance().getReference("Users");
         databaseref = databaseReference.child("usernames");
         relativeLayout.setEnabled(false);
 
@@ -208,18 +208,22 @@ public class Search extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 list.clear();
-
+              /*  Toast.makeText(Search.this, currentuser_city, Toast.LENGTH_SHORT).show();
+                Toast.makeText(Search.this, spFilter.getSelectedItem().toString() , Toast.LENGTH_SHORT).show();*/
                 if(currentuser_city != null) {
+                    Toast.makeText(Search.this, "if", Toast.LENGTH_SHORT).show();
                     final ArrayList<PostModel> postModels = new ArrayList<>();
-                    databaseReference_Searchcity.child(currentuser_city.toLowerCase()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
+                    databaseReference_Searchcity.orderByChild("city").equalTo(currentuser_city.toLowerCase()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                         @Override
                         public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+                            Log.d("onDataChange1: ", dataSnapshot.toString());
                             for(final com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
                             {
+
                                 databaseReference.child(data.getKey()).addValueEventListener(new com.google.firebase.database.ValueEventListener() {
                                     @Override
                                     public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-                                        Log.d("onDataChange1: ", dataSnapshot.toString());
+
 
                                         names = dataSnapshot.child("name").getValue(String.class);
                                         profileImage = dataSnapshot.child("uri").getValue(String.class);
@@ -236,7 +240,7 @@ public class Search extends AppCompatActivity {
                                                 for(com.google.firebase.database.DataSnapshot data: dataSnapshot.getChildren())
                                                 {
 
-                                                    Log.d("data", data.toString());
+                                                    Log.d("datasnapshot", data.toString());
                                                     PostModel postModel = data.getValue(PostModel.class);
                                                     postModel.setName(user.getName());
                                                     postModel.setId(user.getId());
@@ -275,6 +279,9 @@ public class Search extends AppCompatActivity {
 
                         }
                     });
+                }
+                else{
+                    Toast.makeText(Search.this, "else", Toast.LENGTH_SHORT).show();
                 }
             }
 

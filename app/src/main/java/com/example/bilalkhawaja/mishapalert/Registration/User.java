@@ -4,6 +4,7 @@ import com.example.bilalkhawaja.mishapalert.NotificationModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Bilal Khawaja on 4/22/2017.
@@ -12,7 +13,7 @@ public class User {
 
     private String key;
     private String FCM_TOKEN;
-    private ArrayList<NotificationModel> Notification;
+   // private List<NotificationModel> Notification;
     private String Password;
     private String city;
     private String email;
@@ -42,14 +43,14 @@ public class User {
     }
 
 
-    public ArrayList<NotificationModel> getNotification() {
+  /*  public List<NotificationModel> getNotification() {
         return Notification;
     }
 
 
-    public void setNotification(ArrayList<NotificationModel> notification) {
+    public void setNotification(List<NotificationModel> notification) {
         Notification = notification;
-    }
+    }*/
 
     public String getPassword() {
         return Password;

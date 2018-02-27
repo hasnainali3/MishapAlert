@@ -1,8 +1,10 @@
 package com.example.bilalkhawaja.mishapalert.Profiles;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -238,13 +241,18 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         progressDialog.setMessage("Uploading Image...");
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
         //SAVE URI FROM GALLERY
-        if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
+        if(resultCode == Activity.RESULT_CANCELED)
+        {
+            /*Intent i = new Intent(EditProfile.this, EditProfile.class);
+            startActivity(i);
+            finish();*/
+        }
+        else if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
             imageHoldUri = imageUri;
 
@@ -267,28 +275,31 @@ public class EditProfile extends AppCompatActivity {
         }
 
 
-        //image crop library code
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
+        if(imageHoldUri!= null) {
 
-                imageHoldUri = result.getUri();
+            //image crop library code
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (resultCode == RESULT_OK) {
 
-                ivProfilePicture.setImageURI(imageHoldUri);
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+                    imageHoldUri = result.getUri();
+
+                    ivProfilePicture.setImageURI(imageHoldUri);
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Exception error = result.getError();
+                }
             }
+
+            StorageReference filepath = storageReference.child("Photos").child(userID);
+            filepath.putFile(imageHoldUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    downloadURI = taskSnapshot.getDownloadUrl();
+                    progressDialog.dismiss();
+
+                }
+            });
         }
-
-        StorageReference filepath = storageReference.child("Photos").child(userID);
-        filepath.putFile(imageHoldUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                downloadURI = taskSnapshot.getDownloadUrl();
-                progressDialog.dismiss();
-
-            }
-        });
 
     }
 

@@ -64,7 +64,7 @@ public class MapsActivity2 extends FragmentActivity implements OnMapReadyCallbac
         radius = Double.parseDouble((getIntent().getStringExtra("radius")));
         mMap.addCircle(new CircleOptions()
                 .center(new LatLng(lat, lon))
-                .radius(radius)
+                .radius(radius * 1000)
                 .strokeColor(Color.TRANSPARENT)
                 .fillColor(Color.argb(100, 150,150,150)));
 

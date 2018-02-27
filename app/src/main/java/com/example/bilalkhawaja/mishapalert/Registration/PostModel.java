@@ -28,7 +28,6 @@ public class PostModel {
     public void setEmail(String email) {
         this.email = email;
     }
-
     public HashMap<String, String> getReport() {
         return report;
     }
@@ -36,7 +35,6 @@ public class PostModel {
     public void setReport(HashMap<String, String> report) {
         this.report = report;
     }
-
     public int getFake() {
         return fake;
     }
